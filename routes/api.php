@@ -16,3 +16,26 @@ use Illuminate\Http\Request;
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+
+//Route::get('/', function () {
+//    //return view('welcome');
+//    return redirect()->route('listar-empresas');
+//});
+//
+//Route::get('/empresas', [
+//    'uses' => 'EmpresaController@getEmpresas',
+//    'as' => 'listar-empresas'
+//]);
+//
+//Route::post('/empresa', [
+//    'uses' => 'EmpresaController@postEmpresa'
+//]);
+//
+//Route::put('/empresa', [
+//    'uses' => 'EmpresaController@putEmpresa'
+//]);
+//
+//Route::delete('/empresa/{id}', [
+//    'uses' => 'EmpresaController@deleteEmpresa'
+//]);
