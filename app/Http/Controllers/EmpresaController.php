@@ -28,6 +28,16 @@ class EmpresaController extends Controller
 
     public function postEmpresa(Request $req)
     {
+
+        $validator = Validator::make($req->all(), [
+            'cnpj' => 'required',
+            'razao_social' => 'required'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['erro' => 'Ocorreu Erro de Validação!'], 200);
+        }
+
         $this->empresa->cnpj = $req->input('cnpj');
         $this->empresa->razao_social = $req->input('razao_social');
         $insert = $this->empresa->save();

@@ -11,6 +11,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Empresa;
 use App\Vendedor;
+use Validator;
 
 class VendedorController extends Controller
 {
@@ -29,11 +30,36 @@ class VendedorController extends Controller
 
     public function postVendedor(Request $req)
     {
+        $validator = Validator::make($req->all(), [
+            'nome' => 'required',
+            'idade' => 'required',
+            'empresa' => 'required'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['erro' => 'Ocorreu Erro de Validação!'], 200);
+        }
+
+        $this->validate($req, [
+            'nome' => 'required',
+            'idade' => 'required',
+            'empresa' => 'required'
+        ]);
+        $existe = Vendedor::where('nome',$req->input('nome'))->first();
+
+        if ($existe) {
+            return response()->json(['erro' => 'Este vendedor já está cadastrado em outra empresa!'], 200);
+        }
         $this->vendedor->nome = $req->input('nome');
         $this->vendedor->idade = $req->input('idade');
         $this->vendedor->empresa = $req->input('empresa');
 
-        $insert = $this->vendedor->save();
+        try {
+            $insert = $this->vendedor->save();
+        }
+        catch(Exception $e){
+            return response()->json(['erro' => 'Ocorreu um erro: '.$e->getMessage()], 500);
+        }
 
         if (!$insert) {
             return response()->json(['erro' => 'Erro ao cadastrar o Vendedor!'], 500);
@@ -43,14 +69,32 @@ class VendedorController extends Controller
 
     public function putVendedor(Request $req, $id)
     {
+        $validator = Validator::make($req->all(), [
+            'id' => 'required',
+            'nome' => 'required',
+            'idade' => 'required',
+            'empresa' => 'required'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['erro' => 'Ocorreu Erro de Validação!'], 200);
+        }
+
         $vendedor = Vendedor::find($id);
+
         if (!$vendedor) {
             return response()->json(['message' => 'Vendedor não encontrada!', 404]);
         }
         $vendedor->nome = $req->input('nome');
         $vendedor->idade = $req->input('idade');
         $vendedor->empresa = $req->input('empresa');
-        $vendedor->save();
+
+        try {
+            $this->vendedor->save();
+        }
+        catch(Exception $e){
+            return response()->json(['erro' => 'Ocorreu um erro: '.$e->getMessage()], 500);
+        }
         return response()->json(['vendedor' => $vendedor], 200);
     }
 

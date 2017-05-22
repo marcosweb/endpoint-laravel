@@ -31,6 +31,7 @@ Route::delete('empresa/{id}', 'EmpresaController@deleteEmpresa');
  */
 
 Route::get('vendedores/{empresa?}', 'VendedorController@getVendedores')->name('lista-vendedores');
+Route::get('vendedor/{id?}', 'VendedorController@getVendedor');
 Route::post('vendedor', 'VendedorController@postVendedor');
 Route::put('vendedor/{id}', 'VendedorController@putVendedor');
 Route::delete('vendedor/{id}', 'VendedorController@deleteVendedor');
