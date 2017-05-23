@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: Marcos
- * Date: 19/05/2017
- * Time: 20:04
- */
 
 namespace App\Http\Controllers;
 
@@ -16,29 +10,41 @@ class EmpresaController extends Controller
 {
     private $empresa;
 
+    /**
+     * EmpresaController constructor.
+     * @param Empresa $empresa
+     */
     public function __construct(Empresa $empresa)
     {
         $this->empresa = $empresa;
     }
 
+
+    /**
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function getEmpresas()
     {
         $empresas = Empresa::all();
         return response()->json(['empresas' => $empresas], 200);
     }
 
+
+    /**
+     * Adicionar Empresa
+     *
+     * @param Request $req
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function postEmpresa(Request $req)
     {
-
         $validator = Validator::make($req->all(), [
-            'cnpj' => 'required',
+            'cnpj' => 'required|min:14|max:15|unique:empresas,cnpj',
             'razao_social' => 'required'
         ]);
-
         if ($validator->fails()) {
-            return response()->json(['erro' => 'Ocorreu Erro de Validação!'], 200);
+            return response()->json(['erro' => $validator->messages()], 200);
         }
-
         $this->empresa->cnpj = $req->input('cnpj');
         $this->empresa->razao_social = $req->input('razao_social');
         $insert = $this->empresa->save();
@@ -48,9 +54,24 @@ class EmpresaController extends Controller
         return response()->json(['empresa' => $this->empresa], 201);
     }
 
+
+    /**
+     * Alterar Empresa
+     *
+     * @param Request $req
+     * @param $id
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function putEmpresa(Request $req, $id)
     {
         $empresa = Empresa::find($id);
+        $validator = Validator::make($req->all(), [
+            'cnpj' => 'required|min:14|max:15|unique:empresas,cnpj,'.$empresa->id,
+            'razao_social' => 'required'
+        ]);
+        if ($validator->fails()) {
+            return response()->json(['erro' => $validator->messages()], 200);
+        }
         if (!$empresa) {
             return response()->json(['message' => 'Empresa não encontrada', 404]);
         }
@@ -60,6 +81,13 @@ class EmpresaController extends Controller
         return response()->json(['empresa' => $empresa], 200);
     }
 
+
+    /**
+     * Excluir Empresa
+     *
+     * @param $id
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function deleteEmpresa($id)
     {
         $empresa = Empresa::find($id);

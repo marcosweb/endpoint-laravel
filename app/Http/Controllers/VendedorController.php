@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: Marcos
- * Date: 19/05/2017
- * Time: 20:04
- */
 
 namespace App\Http\Controllers;
 
@@ -15,58 +9,74 @@ use Validator;
 
 class VendedorController extends Controller
 {
+    /**
+     * @var Vendedor
+     */
     private $vendedor;
 
+
+    /**
+     * VendedorController constructor.
+     * @param Vendedor $vendedor
+     */
     public function __construct(Vendedor $vendedor)
     {
         $this->vendedor = $vendedor;
     }
 
+
+    /**
+     * Lista Vendedores
+     *
+     * @param int $empresa ID da empresa. Se forp assado lista vendedores desta empresa
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function getVendedores($empresa = 0)
     {
         $vendedores = $empresa ? Empresa::find($empresa)->vendedores()->get() : Vendedor::all();
         return response()->json(['vendedores' => $vendedores], 200);
     }
 
+
+    /**
+     * Adiciona Vendedor
+     *
+     * @param Request $req
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function postVendedor(Request $req)
     {
         $validator = Validator::make($req->all(), [
-            'nome' => 'required',
-            'idade' => 'required',
-            'empresa' => 'required'
+            'nome' => 'required|min:3|max:100|unique:vendedores,nome',
+            'idade' => 'required|numeric',
+            'empresa' => 'required|numeric'
         ]);
-
         if ($validator->fails()) {
-            return response()->json(['erro' => 'Ocorreu Erro de Validação!'], 200);
-        }
-
-        $this->validate($req, [
-            'nome' => 'required',
-            'idade' => 'required',
-            'empresa' => 'required'
-        ]);
-        $existe = Vendedor::where('nome',$req->input('nome'))->first();
-
-        if ($existe) {
-            return response()->json(['erro' => 'Este vendedor já está cadastrado em outra empresa!'], 200);
+            return response()->json(['erro' => $validator->messages()], 200);
         }
         $this->vendedor->nome = $req->input('nome');
         $this->vendedor->idade = $req->input('idade');
         $this->vendedor->empresa = $req->input('empresa');
-
         try {
             $insert = $this->vendedor->save();
         }
         catch(Exception $e){
             return response()->json(['erro' => 'Ocorreu um erro: '.$e->getMessage()], 500);
         }
-
         if (!$insert) {
             return response()->json(['erro' => 'Erro ao cadastrar o Vendedor!'], 500);
         }
         return response()->json(['vendedor' => $this->vendedor], 201);
     }
 
+
+    /**
+     * Altera Vendedor
+     *
+     * @param Request $req
+     * @param $id ID do Vendedor a ser modificado
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function putVendedor(Request $req, $id)
     {
         $validator = Validator::make($req->all(), [
@@ -83,7 +93,7 @@ class VendedorController extends Controller
         $vendedor = Vendedor::find($id);
 
         if (!$vendedor) {
-            return response()->json(['message' => 'Vendedor não encontrada!', 404]);
+            return response()->json(['erro' => 'Vendedor não encontrada!', 404]);
         }
         $vendedor->nome = $req->input('nome');
         $vendedor->idade = $req->input('idade');
@@ -98,6 +108,13 @@ class VendedorController extends Controller
         return response()->json(['vendedor' => $vendedor], 200);
     }
 
+
+    /**
+     * Exclui Vendedor
+     *
+     * @param $id ID do Vendedor a ser excluído
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function deleteVendedor($id)
     {
         $vendedor = Vendedor::find($id);
