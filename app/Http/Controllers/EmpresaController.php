@@ -74,7 +74,7 @@ class EmpresaController extends Controller
         }
         $empresa = Empresa::find($id);
         if (!$empresa) {
-            return response()->json(['message' => 'Empresa não encontrada', 404]);
+            return response()->json(['erro' => ['404'=>'Empresa não encontrada'], 404]);
         }
         $empresa->cnpj = $req->input('cnpj');
         $empresa->razao_social = $req->input('razao_social');

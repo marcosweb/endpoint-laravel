@@ -79,6 +79,7 @@ class VendedorController extends Controller
      */
     public function putVendedor(Request $req, $id)
     {
+        dd($req->input());
         $validator = Validator::make($req->all(), [
             'nome' => 'required|min:3|max:100|unique:vendedores,nome,'.$id,
             'idade' => 'required|numeric',
@@ -89,17 +90,17 @@ class VendedorController extends Controller
         }
         $vendedor = Vendedor::find($id);
         if (!$vendedor) {
-            return response()->json(['erro' => 'Vendedor não encontrada!', 404]);
+            return response()->json(['erro' => ['404'=>'Vendedor não encontrada!'], 404]);
         }
-        $vendedor->nome = $req->input('nome');
-        $vendedor->idade = $req->input('idade');
-        $vendedor->empresa = $req->input('empresa');
+        $this->vendedor->nome = $req->input('nome');
+        $this->vendedor->idade = $req->input('idade');
+        $this->vendedor->empresa = $req->input('empresa');
 
         try {
             $this->vendedor->save();
         }
         catch(Exception $e){
-            return response()->json(['erro' => 'Ocorreu um erro: '.$e->getMessage()], 500);
+            return response()->json(['erro' => ['500'=>'Ocorreu um erro: '.$e->getMessage()]], 500);
         }
         return response()->json(['vendedor' => $vendedor], 200);
     }
