@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Vendedor;
 use Illuminate\Http\Request;
 use App\Empresa;
 use Validator;
@@ -91,6 +92,10 @@ class EmpresaController extends Controller
      */
     public function deleteEmpresa($id)
     {
+        $vendedores = Vendedor::where('empresa',$id)->get()->count();
+        if ($vendedores) {
+            return response()->json(['erro'=>['200'=>'Não é possível excluir empresa que possui vendedores.']]);
+        }
         $empresa = Empresa::find($id);
         $del = $empresa->delete();
         if (!$del) {
