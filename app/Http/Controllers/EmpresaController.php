@@ -66,12 +66,13 @@ class EmpresaController extends Controller
     {
         $empresa = Empresa::find($id);
         $validator = Validator::make($req->all(), [
-            'cnpj' => 'required|min:14|max:15|unique:empresas,cnpj,'.$empresa->id,
+            'cnpj' => 'required|min:14|max:15|unique:empresas,cnpj,'.$id,
             'razao_social' => 'required'
         ]);
         if ($validator->fails()) {
             return response()->json(['erro' => $validator->messages()], 200);
         }
+        $empresa = Empresa::find($id);
         if (!$empresa) {
             return response()->json(['message' => 'Empresa não encontrada', 404]);
         }
