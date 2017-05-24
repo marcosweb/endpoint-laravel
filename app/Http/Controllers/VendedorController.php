@@ -33,8 +33,17 @@ class VendedorController extends Controller
      */
     public function getVendedores($empresa = 0)
     {
-        $vendedores = $empresa ? Empresa::find($empresa)->vendedores()->get() : Vendedor::all();
-        return response()->json(['vendedores' => $vendedores], 200);
+        $json = [];
+        if ($empresa) {
+            $emp = Empresa::find($empresa);
+            $json['vendedores'] = $emp->vendedores()->get();
+            $json['razao_social'] = $emp->razao_social;
+        }
+        else {
+            $json['vendedores'] = Vendedor::all();
+        }
+//        $vendedores = $empresa ? Empresa::find($empresa)->vendedores()->get() : Vendedor::all();
+        return response()->json($json, 200);
     }
 
 
