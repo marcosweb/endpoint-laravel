@@ -18,7 +18,7 @@ class CreateVendedoresTable extends Migration
             $table->string('nome', 80);
             $table->integer('idade')->default(0);
             $table->integer('empresa')->unsigned();
-            $table->foreign('empresa')->references('id')->on('empresas');
+            $table->foreign('empresa')->references('id')->on('empresas')->onDelete('cascade');
             $table->timestamps();
         });
     }
