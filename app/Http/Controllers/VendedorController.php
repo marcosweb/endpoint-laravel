@@ -80,18 +80,14 @@ class VendedorController extends Controller
     public function putVendedor(Request $req, $id)
     {
         $validator = Validator::make($req->all(), [
-            'id' => 'required',
-            'nome' => 'required',
-            'idade' => 'required',
-            'empresa' => 'required'
+            'nome' => 'required|min:3|max:100|unique:vendedores,nome',
+            'idade' => 'required|numeric',
+            'empresa' => 'required|numeric'
         ]);
-
         if ($validator->fails()) {
-            return response()->json(['erro' => 'Ocorreu Erro de Validação!'], 200);
+            return response()->json(['erro' => $validator->messages()], 200);
         }
-
         $vendedor = Vendedor::find($id);
-
         if (!$vendedor) {
             return response()->json(['erro' => 'Vendedor não encontrada!', 404]);
         }
