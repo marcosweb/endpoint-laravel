@@ -79,7 +79,6 @@ class VendedorController extends Controller
      */
     public function putVendedor(Request $req, $id)
     {
-
         $validator = Validator::make($req->all(), [
             'nome' => 'required|min:3|max:100|unique:vendedores,nome,'.$id,
             'idade' => 'required|numeric',
@@ -88,8 +87,8 @@ class VendedorController extends Controller
         if ($validator->fails()) {
             return response()->json(['erro' => $validator->messages()], 200);
         }
-        $vendedor = Vendedor::find($id);
-        if (!$vendedor) {
+        $this->vendedor = Vendedor::find($id);
+        if (!$this->vendedor) {
             return response()->json(['erro' => ['404'=>'Vendedor não encontrada!'], 404]);
         }
         $this->vendedor->nome = $req->input('nome');
@@ -102,7 +101,7 @@ class VendedorController extends Controller
         catch(Exception $e){
             return response()->json(['erro' => ['500'=>'Ocorreu um erro: '.$e->getMessage()]], 500);
         }
-        return response()->json(['vendedor' => $vendedor], 200);
+        return response()->json(['vendedor' => $this->vendedor], 200);
     }
 
 

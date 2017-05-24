@@ -64,7 +64,7 @@ class EmpresaController extends Controller
      */
     public function putEmpresa(Request $req, $id)
     {
-        $empresa = Empresa::find($id);
+        $this->empresa = Empresa::find($id);
         $validator = Validator::make($req->all(), [
             'cnpj' => 'required|min:14|max:15|unique:empresas,cnpj,'.$id,
             'razao_social' => 'required'
@@ -72,14 +72,14 @@ class EmpresaController extends Controller
         if ($validator->fails()) {
             return response()->json(['erro' => $validator->messages()], 200);
         }
-        $empresa = Empresa::find($id);
-        if (!$empresa) {
+        $this->empresa = Empresa::find($id);
+        if (!$this->empresa) {
             return response()->json(['erro' => ['404'=>'Empresa não encontrada'], 404]);
         }
-        $empresa->cnpj = $req->input('cnpj');
-        $empresa->razao_social = $req->input('razao_social');
-        $empresa->save();
-        return response()->json(['empresa' => $empresa], 200);
+        $this->empresa->cnpj = $req->input('cnpj');
+        $this->empresa->razao_social = $req->input('razao_social');
+        $this->empresa->save();
+        return response()->json(['empresa' => $this->empresa], 200);
     }
 
 
