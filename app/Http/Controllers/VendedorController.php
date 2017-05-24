@@ -79,7 +79,7 @@ class VendedorController extends Controller
      */
     public function putVendedor(Request $req, $id)
     {
-        dd($req->input());
+
         $validator = Validator::make($req->all(), [
             'nome' => 'required|min:3|max:100|unique:vendedores,nome,'.$id,
             'idade' => 'required|numeric',
